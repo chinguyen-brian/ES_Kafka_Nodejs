@@ -1,0 +1,40 @@
+{
+  "name": "catalog_service",
+  "version": "1.0.0",
+  "description": "",
+  "main": "/src/server.ts",
+  "scripts": {
+    "dev": "nodemon --exec tsx src/server.ts",
+    "start": "node dist/server.js",
+    "build": "tsc -p .",
+    "test": "node --experimental-vm-modules node_modules/jest/bin/jest.js --runInBand"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "type": "module",
+  "dependencies": {
+    "@prisma/client": "^6.17.1",
+    "@types/node": "^24.8.1",
+    "class-transformer": "^0.5.1",
+    "class-validator": "^0.14.2",
+    "express": "^5.1.0",
+    "ts-node": "^10.9.2",
+    "typescript": "^5.9.3"
+  },
+  "devDependencies": {
+    "@faker-js/faker": "^10.1.0",
+    "@types/express": "^5.0.3",
+    "@types/jest": "^30.0.0",
+    "@types/rosie": "^0.0.45",
+    "@types/supertest": "^6.0.3",
+    "cross-env": "^10.1.0",
+    "jest": "^30.2.0",
+    "nodemon": "^3.1.10",
+    "prisma": "^6.17.1",
+    "rosie": "^2.1.1",
+    "supertest": "6.3.3",
+    "ts-jest": "^29.4.5",
+    "tsx": "^4.20.6"
+  }
+}
