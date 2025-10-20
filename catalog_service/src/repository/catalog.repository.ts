@@ -1,6 +1,6 @@
 import type { ICatalogRepository } from "../interface/catalogRepository.interface.js";
 import type { Product } from "../models/product.model.js";
-import { PrismaClient } from "@prisma/client";
+import { PrismaClient } from "../generated/prisma/index.js";
 
 export class CatalogRepository implements ICatalogRepository {
   _prisma: PrismaClient;
