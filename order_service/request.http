@@ -3,7 +3,7 @@ POST http://localhost:9000/cart
 Content-Type: "application/json"
 
 {
-    "item": "smart phone",
-    "price": 1200,
-    "qty": 3
+    "customerId": 12,
+    "productId": 1,
+    "qty": 1,
 }
