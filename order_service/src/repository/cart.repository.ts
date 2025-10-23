@@ -7,6 +7,10 @@ import { NotFoundError } from "../utils";
 export type CartRepositoryType = {
   createCart: (customerId: number, lineItem: CartLineItem) => Promise<number>;
   findCart: (id: number) => Promise<Cart>;
+  findCartByProductId: (
+    customerId: number,
+    productId: number
+  ) => Promise<CartLineItem>;
   updateCart: (id: number, qty: number) => Promise<CartLineItem>;
   deleteCart: (id: number) => Promise<Boolean>;
   clearCartData: (id: number) => Promise<Boolean>;
@@ -51,6 +55,21 @@ const findCart = async (id: number): Promise<Cart> => {
   return cart;
 };
 
+const findCartByProductId = async (
+  customerId: number,
+  productId: number
+): Promise<CartLineItem> => {
+  const cart = await DB.query.carts.findFirst({
+    where: eq(carts.customerId, customerId),
+    with: {
+      lineItems: true,
+    },
+  });
+  const lineItem = cart?.lineItems.find((item) => item.productId === productId);
+
+  return lineItem as CartLineItem;
+};
+
 const updateCart = async (id: number, qty: number): Promise<CartLineItem> => {
   const [cartLineItem] = await DB.update(cartLineItems)
     .set({ qty })
@@ -75,4 +94,5 @@ export const CartRepository: CartRepositoryType = {
   updateCart,
   deleteCart,
   clearCartData,
+  findCartByProductId
 };

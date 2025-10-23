@@ -5,15 +5,24 @@ import { logger, NotFoundError } from "../utils";
 import { GetProductDetails } from "../utils/broker";
 
 export const CreateCart = async (
-  input: CartRequestInput,
+  input: CartRequestInput & { customerId: number },
   repo: CartRepositoryType
 ) => {
-  //  Make a call to catalog service to get product details
-  // Synchronize call
+  // get product details from catalog service
   const product = await GetProductDetails(input.productId);
   logger.info(product);
+
   if (product.stock < input.qty) {
     throw new NotFoundError("Product is out of stock");
+  }
+
+  // find if the product already exists in cart
+  const lineItem = await repo.findCartByProductId(
+    input.customerId,
+    input.productId
+  );
+  if (lineItem) {
+    return repo.updateCart(lineItem.id, lineItem.qty + input.qty);
   }
 
   return await repo.createCart(input.customerId, {
@@ -50,4 +59,3 @@ export const ClearCartData = async (id: number, repo: CartRepositoryType) => {
   const data = await repo.clearCartData(id);
   return data;
 };
-
