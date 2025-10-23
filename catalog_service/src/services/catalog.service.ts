@@ -39,4 +39,12 @@ export class CatalogService {
     //TODO: Delete record from Elastic Search
     return response;
   }
+
+  async getProductStock(ids: number[]){
+    const products = await this._repository.findStockByIds(ids);
+    if(!products){
+      throw new Error("Unable to fetch product stock");
+    }
+    return products;
+  }
 }

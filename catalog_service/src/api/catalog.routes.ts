@@ -29,7 +29,8 @@ router.post(
       const data = await catalogService.createProduct(input);
       res.status(201).json(data);
     } catch (error) {
-      return next(error);
+      const err = error as Error;
+      return res.status(500).json(err.message);
     }
   }
 );
@@ -48,7 +49,8 @@ router.patch(
       const data = await catalogService.updateProduct({ id, ...input });
       return res.status(200).json(data);
     } catch (error) {
-      next(error);
+      const err = error as Error;
+      return res.status(500).json(err.message);
     }
   }
 );
@@ -62,7 +64,8 @@ router.get(
       const data = await catalogService.getProducts(limit, offset);
       return res.status(200).json(data);
     } catch (error) {
-      return next(error);
+      const err = error as Error;
+      return res.status(500).json(err.message);
     }
   }
 );
@@ -88,7 +91,21 @@ router.delete(
       const data = await catalogService.deleteProduct(id);
       return res.status(200).json(data);
     } catch (error) {
-      return next(error);
+      const err = error as Error;
+      return res.status(500).json(err.message);
+    }
+  }
+);
+
+router.post(
+  "/products/stock",
+  async (req: Request, res: Response) => {
+    try {
+      const data = await catalogService.getProductStock(req.body.ids);
+      return res.status(200).json(data);
+    } catch (error) {
+      const err = error as Error;
+      return res.status(500).json(err.message);
     }
   }
 );
