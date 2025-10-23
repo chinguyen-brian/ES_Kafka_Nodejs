@@ -1,5 +1,7 @@
-import { CartRequestInput } from "../dto/cartRequest.dto";
-import { CartRepositoryType } from "../types/repository.type";
+import { CartLineItem } from "../db/schema";
+import { CartEditRequestInput, CartRequestInput } from "../dto/cartRequest.dto";
+import { CartRepositoryType } from "../repository/cart.repository";
+import { logger, NotFoundError } from "../utils";
 import { GetProductDetails } from "../utils/broker";
 
 export const CreateCart = async (
@@ -9,25 +11,43 @@ export const CreateCart = async (
   //  Make a call to catalog service to get product details
   // Synchronize call
   const product = await GetProductDetails(input.productId);
+  logger.info(product);
   if (product.stock < input.qty) {
-    throw new Error("Product is out of stock");
+    throw new NotFoundError("Product is out of stock");
   }
 
-  const data = await repo.create(input);
+  return await repo.createCart(input.customerId, {
+    productId: product.id,
+    price: product.price.toString(),
+    qty: input.qty,
+    itemName: product.name,
+    variant: product.variant,
+  } as CartLineItem);
+};
+
+export const GetCart = async (id: number, repo: CartRepositoryType) => {
+  const data = await repo.findCart(id);
+  if (!data) {
+    throw new NotFoundError("cart not found");
+  }
   return data;
 };
 
-export const GetCart = async (input: any, repo: CartRepositoryType) => {
-  const data = await repo.find(input);
+export const EditCart = async (
+  input: CartEditRequestInput,
+  repo: CartRepositoryType
+) => {
+  const data = await repo.updateCart(input.id, input.qty);
   return data;
 };
 
-export const EditCart = async (input: any, repo: CartRepositoryType) => {
-  const data = await repo.update(input);
+export const DeleteCart = async (id: number, repo: CartRepositoryType) => {
+  const data = await repo.deleteCart(id);
   return data;
 };
 
-export const DeleteCart = async (input: any, repo: CartRepositoryType) => {
-  const data = await repo.delete(input);
+export const ClearCartData = async (id: number, repo: CartRepositoryType) => {
+  const data = await repo.clearCartData(id);
   return data;
 };
+

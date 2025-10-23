@@ -1,15 +1,16 @@
 import { APP_PORT } from "./config/index.js";
-import expressApp from "./expressApp.js";
-
+import { ExpressApp } from "./expressApp.js";
+import { logger } from "./utils";
 const PORT = APP_PORT || 9000;
 
 export const StartServer = async () => {
+  const expressApp = await ExpressApp()
   expressApp.listen(PORT, () => {
-    console.log(`App is listening to ${PORT}`);
+    logger.info(`App is listening to ${PORT}`);
   });
 
   process.on("uncaughtException", async (err) => {
-    console.log(err);
+    logger.error(err);
     process.exit(1);
   });
 
@@ -17,5 +18,5 @@ export const StartServer = async () => {
 };
 
 StartServer().then(() => {
-  console.log("Server is up");
+  logger.info("Server is up");
 });
