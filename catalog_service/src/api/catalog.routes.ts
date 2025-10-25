@@ -10,10 +10,14 @@ import {
 } from "../dto/product.dto.js";
 import { CatalogService } from "../services/catalog.service.js";
 import { CatalogRepository } from "../repository/catalog.repository.js";
+import { BrokerService } from "../services/broker.service";
 
 const router = express.Router();
 
 export const catalogService = new CatalogService(new CatalogRepository());
+
+const brokerService = new BrokerService(catalogService);
+brokerService.InitializeBroker();
 
 router.post(
   "/products",
@@ -97,17 +101,14 @@ router.delete(
   }
 );
 
-router.post(
-  "/products/stock",
-  async (req: Request, res: Response) => {
-    try {
-      const data = await catalogService.getProductStock(req.body.ids);
-      return res.status(200).json(data);
-    } catch (error) {
-      const err = error as Error;
-      return res.status(500).json(err.message);
-    }
+router.post("/products/stock", async (req: Request, res: Response) => {
+  try {
+    const data = await catalogService.getProductStock(req.body.ids);
+    return res.status(200).json(data);
+  } catch (error) {
+    const err = error as Error;
+    return res.status(500).json(err.message);
   }
-);
+});
 
 export default router;

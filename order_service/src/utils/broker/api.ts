@@ -5,9 +5,9 @@ import { APIError, NotFoundError } from "../error";
 import { Product } from "../../dto/product.dto";
 import { User } from "../../dto/user.model";
 
-const CATALOG_URL = CATALOG_BASE_URL || "http://localhost:9001";
+const CATALOG_URL = CATALOG_BASE_URL;
 
-const AUTH_SERVICE_URL = AUTH_SERVICE_BASE_URL || "http://localhost:9000";
+const AUTH_SERVICE_URL = AUTH_SERVICE_BASE_URL;
 
 export const GetProductDetails = async (productId: number) => {
   try {

@@ -40,11 +40,13 @@ export class CatalogService {
     return response;
   }
 
-  async getProductStock(ids: number[]){
+  async getProductStock(ids: number[]) {
     const products = await this._repository.findStockByIds(ids);
-    if(!products){
+    if (!products) {
       throw new Error("Unable to fetch product stock");
     }
     return products;
   }
+
+  async HandleBrokerMessage(data: any) {}
 }
