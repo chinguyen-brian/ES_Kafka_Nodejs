@@ -26,7 +26,7 @@ export class BrokerService {
     // keep listening to consumers events
     // perform the action based on the event
     await MessageBroker.subscribe(
-      this.catalogService.HandleBrokerMessage,
+      this.catalogService.HandleBrokerMessage.bind(this.catalogService),
       "CatalogEvents"
     );
   }

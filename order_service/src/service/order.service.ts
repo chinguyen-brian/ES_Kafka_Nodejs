@@ -2,6 +2,7 @@ import { OrderLineItemType, OrderWithLineItems } from "../dto/orderRequest.dto";
 import { CartRepositoryType } from "../repository/cart.repository";
 import { OrderRepositoryType } from "../repository/order.repository";
 import { MessageType, OrderStatus } from "../types";
+import { SendCreateOrderMessage } from "./broker.service";
 
 export const CreateOrder = async (
   userId: number,
@@ -20,6 +21,7 @@ export const CreateOrder = async (
   cart.lineItems.forEach((cartItem) => {
     totalAmount += Number(cartItem.price) * cartItem.qty;
     orderLineItems.push({
+      productId: cartItem.productId,
       itemName: cartItem.itemName,
       qty: cartItem.qty,
       price: cartItem.price,
@@ -38,12 +40,12 @@ export const CreateOrder = async (
     orderItems: orderLineItems,
   } as OrderWithLineItems;
 
-  const order = await repo.createOrder(orderInput);
-  await cartRepo.clearCartData(cart.id);
-  console.log("Order created", order);
+  // const order = await repo.createOrder(orderInput);
+  // await cartRepo.clearCartData(cart.id);
+  // console.log("Order created", order);
 
   //TODO: send message to catalog service to update stock)
-  // await repo.publishOrderEvent(order, "ORDER_CREATED");
+  await SendCreateOrderMessage(orderInput);
   return { message: "Order created successfully", orderNumber: orderNumber };
 };
 
