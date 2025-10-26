@@ -1,5 +1,6 @@
 import type { ICatalogRepository } from "../interface/catalogRepository.interface.js";
 import type { Product } from "../models/product.model.js";
+import { CatalogEvent, MessageType } from "../types/broker.type.js";
 import { OrderWithLineItems } from "../types/message.type.js";
 
 export class CatalogService {
@@ -49,7 +50,7 @@ export class CatalogService {
     return products;
   }
 
-  async HandleBrokerMessage(message: any) {
+  async HandleBrokerMessage(message: MessageType) {
     console.log("Catalog service received message:", message);
     const orderData = message.data as OrderWithLineItems;
     const { orderItems } = orderData;
@@ -62,7 +63,14 @@ export class CatalogService {
           item.productId
         );
       } else {
-        const updatedStock = product.stock - item.qty;
+        let updatedStock = 0;
+        if (message.event == CatalogEvent.CREATE_ORDER) {
+          updatedStock = product.stock - item.qty;
+        } else if (message.event == CatalogEvent.CANCEL_ORDER) {
+          updatedStock = product.stock + item.qty;
+        }
+        console.log(`Update stock with ${message.event} event`);
+
         await this.updateProduct({ ...product, stock: updatedStock });
       }
     });

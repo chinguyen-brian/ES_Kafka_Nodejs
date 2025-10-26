@@ -85,7 +85,7 @@ const deleteCart = async (id: number): Promise<Boolean> => {
 };
 
 const clearCartData = async (id: number): Promise<Boolean> => {
-  await DB.delete(carts).where(eq(carts.id, id)).returning();
+  await DB.delete(carts).where(eq(carts.customerId, id)).returning();
   return true;
 };
 
@@ -95,5 +95,5 @@ export const CartRepository: CartRepositoryType = {
   updateCart,
   deleteCart,
   clearCartData,
-  findCartByProductId
+  findCartByProductId,
 };

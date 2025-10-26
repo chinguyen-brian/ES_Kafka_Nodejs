@@ -1,8 +1,15 @@
-import { OrderLineItemType, OrderWithLineItems } from "../dto/orderRequest.dto";
+import {
+  InProcessOrder,
+  OrderLineItemType,
+  OrderWithLineItems,
+} from "../dto/orderRequest.dto";
 import { CartRepositoryType } from "../repository/cart.repository";
 import { OrderRepositoryType } from "../repository/order.repository";
 import { MessageType, OrderStatus } from "../types";
-import { SendCreateOrderMessage } from "./broker.service";
+import {
+  SendCreateOrderMessage,
+  SendOrderCancelledMessage,
+} from "./broker.service";
 
 export const CreateOrder = async (
   userId: number,
@@ -40,11 +47,10 @@ export const CreateOrder = async (
     orderItems: orderLineItems,
   } as OrderWithLineItems;
 
-  // const order = await repo.createOrder(orderInput);
-  // await cartRepo.clearCartData(cart.id);
-  // console.log("Order created", order);
+  const order = await repo.createOrder(orderInput);
+  await cartRepo.clearCartData(userId);
+  console.log("Order created", order);
 
-  //TODO: send message to catalog service to update stock)
   await SendCreateOrderMessage(orderInput);
   return { message: "Order created successfully", orderNumber: orderNumber };
 };
@@ -54,11 +60,10 @@ export const UpdateOrder = async (
   status: OrderStatus,
   repo: OrderRepositoryType
 ) => {
-  await repo.updateOrder(orderId, status);
+  const order = await repo.updateOrder(orderId, status);
 
-  //TODO: send message to catalog service to update stock based on order status
   if (status === OrderStatus.CANCELLED) {
-    // await repo.publishOrderEvent(order, "ORDER_CANCELLED");
+    await SendOrderCancelledMessage(order);
   }
   return { message: "Order updated successfully" };
 };
@@ -92,4 +97,24 @@ export const DeleteOrder = async (
 
 export const HandleSubscription = async (message: MessageType) => {
   console.log("Message received by order Kafka consumer", message);
+};
+
+export const CheckoutOrder = async (
+  orderId: number,
+  repo: OrderRepositoryType
+) => {
+  const order = await repo.findOrder(orderId);
+  if (!order) {
+    throw new Error("Order not found");
+  }
+  const checkoutOrder: InProcessOrder = {
+    id: order.id,
+    customerId: order.customerId,
+    orderNumber: order.orderNumber,
+    status: order.status,
+    amount: Number(order.amount),
+    createdAt: order.createdAt,
+    updatedAt: order.updatedAt,
+  };
+  return checkoutOrder;
 };
