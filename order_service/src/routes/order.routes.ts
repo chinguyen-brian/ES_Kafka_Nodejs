@@ -104,8 +104,8 @@ router.delete(
 router.get(
   "/orders/:id/checkout",
   async (req: Request, res: Response, next: NextFunction) => {
-    const orderId = parseInt(req.params.id);
-    const response = await service.CheckoutOrder(orderId, repo);
+    const orderNumber = parseInt(req.params.id);
+    const response = await service.CheckoutOrder(orderNumber, repo);
     return res.status(200).json(response);
   }
 );

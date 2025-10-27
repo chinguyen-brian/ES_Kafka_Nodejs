@@ -2,6 +2,7 @@ import type { ICatalogRepository } from "../interface/catalogRepository.interfac
 import type { Product } from "../models/product.model.js";
 import { CatalogEvent, MessageType } from "../types/broker.type.js";
 import { OrderWithLineItems } from "../types/message.type.js";
+import { AppEventListener } from "../utils/AppEventListener.js";
 
 export class CatalogService {
   private _repository: ICatalogRepository;
@@ -15,12 +16,13 @@ export class CatalogService {
     if (!data.id) {
       throw new Error("Unable to create product");
     }
+    AppEventListener.instance.notify({ event: "createProduct", data });
     return data;
   }
 
   async updateProduct(input: Product) {
     const data = await this._repository.update(input);
-    //TODO: emit event to update record in Elastic Search
+    AppEventListener.instance.notify({ event: "updateProduct", data });
     return data;
   }
 
@@ -38,7 +40,7 @@ export class CatalogService {
 
   async deleteProduct(id: number) {
     const response = await this._repository.delete(id);
-    //TODO: Delete record from Elastic Search
+    AppEventListener.instance.notify({ event: "deleteProduct", data: { id } });
     return response;
   }
 

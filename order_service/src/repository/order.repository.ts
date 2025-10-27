@@ -7,6 +7,7 @@ import { orderLineItems, orders } from "../db/schema";
 export type OrderRepositoryType = {
   createOrder: (lineItem: OrderWithLineItems) => Promise<number>;
   findOrder: (orderId: number) => Promise<OrderWithLineItems | null>;
+  fineOrderByOrderNumber: (orderNumber: number) => Promise<OrderWithLineItems | null>;
   updateOrder: (
     orderId: number,
     status: OrderStatus
@@ -57,6 +58,21 @@ const findOrder = async (
   return order as unknown as OrderWithLineItems;
 };
 
+const fineOrderByOrderNumber = async (
+  orderNumber: number
+): Promise<OrderWithLineItems | null> => {
+  const order = await DB.query.orders.findFirst({
+    where: (orders) => eq(orders.orderNumber, orderNumber),
+    with: {
+      orderItems: true,
+    },
+  });
+  if (!order) {
+    throw new Error("Order not found");
+  }
+  return order as unknown as OrderWithLineItems;
+};
+
 const updateOrder = async (
   orderId: number,
   status: string
@@ -94,6 +110,7 @@ const findOrdersByCustomerId = async (
 export const OrderRepository: OrderRepositoryType = {
   createOrder,
   findOrder,
+  fineOrderByOrderNumber,
   updateOrder,
   deleteOrder,
   findOrdersByCustomerId,

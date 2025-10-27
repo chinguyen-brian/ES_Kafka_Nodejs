@@ -5,10 +5,10 @@ import { APIError } from "../error";
 import { User } from "../../dto/user.model";
 import { InProcessOrder } from "../../dto/order.model";
 
-export const GetOrderDetails = async (orderId: number) => {
+export const GetOrderDetails = async (orderNumber: number) => {
   try {
     const response = await axios.get(
-      `${ORDER_BASE_URL}/orders/${orderId}/checkout`
+      `${ORDER_BASE_URL}/orders/${orderNumber}/checkout`
     );
     return response.data as InProcessOrder;
   } catch (error) {
