@@ -1,4 +1,4 @@
-import { APP_PORT } from "./config/index";
+import { APP_PORT } from "./config";
 import { ExpressApp } from "./expressApp";
 import { logger } from "./utils";
 const PORT = APP_PORT || 9003;

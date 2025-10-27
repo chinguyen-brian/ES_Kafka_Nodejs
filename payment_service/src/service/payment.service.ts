@@ -1,8 +1,9 @@
+import { PaymentGateway } from "../utils";
 import { GetOrderDetails } from "./../utils/broker/api";
 export const CreatePayment = async (
   userId: number,
   orderId: number,
-  paymentGateway: unknown
+  paymentGateway: PaymentGateway
 ) => {
   // get order details
   const order = await GetOrderDetails(orderId);
@@ -11,6 +12,7 @@ export const CreatePayment = async (
   }
 
   // create a new payment record
+  paymentGateway.createPayment(order.amount, { orderId, userId });
 
   // call payment gateway
 
