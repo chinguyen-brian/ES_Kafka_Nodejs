@@ -64,8 +64,9 @@ router.get(
   async (req: Request, res: Response, next: NextFunction) => {
     const limit = Number(req.query.limit);
     const offset = Number(req.query.offset);
+    const search = req.query.search as string;
     try {
-      const data = await catalogService.getProducts(limit, offset);
+      const data = await catalogService.getProducts(limit, offset, search);
       return res.status(200).json(data);
     } catch (error) {
       const err = error as Error;

@@ -83,16 +83,21 @@ export class ElasticSearchService {
     console.log("product deleted with id", id);
   }
 
-  async searchProduct(query: string) {
+  async searchProduct(queryString: string) {
     const result = await this.client.search({
       index: this.indexName,
-      query: {
-        multi_match: {
-          query,
-          fields: ["title", "description"],
-          fuzziness: "AUTO",
-        },
-      },
+      query:
+        queryString.length === 0
+          ? {
+              match_all: {},
+            }
+          : {
+              multi_match: {
+                query: queryString,
+                fields: ["title", "description"],
+                fuzziness: "AUTO",
+              },
+            },
     });
     return result.hits.hits.map((hit) => hit._source);
   }

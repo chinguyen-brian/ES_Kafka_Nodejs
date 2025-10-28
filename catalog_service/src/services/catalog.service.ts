@@ -3,6 +3,7 @@ import type { Product } from "../models/product.model.js";
 import { CatalogEvent, MessageType } from "../types/broker.type.js";
 import { OrderWithLineItems } from "../types/message.type.js";
 import { AppEventListener } from "../utils/AppEventListener.js";
+import { ElasticSearchService } from "./elasticSearch.service.js";
 
 export class CatalogService {
   private _repository: ICatalogRepository;
@@ -26,10 +27,10 @@ export class CatalogService {
     return data;
   }
 
-  //TODO: instead of this we will get product from Elastic search
-  async getProducts(limit: number, offset: number) {
-    const products = await this._repository.find(limit, offset);
-
+  async getProducts(limit: number, offset: number, search: string) {
+    const elkService = new ElasticSearchService();
+    const products = elkService.searchProduct(search);
+    console.log("Products from ES", products);
     return products;
   }
 
